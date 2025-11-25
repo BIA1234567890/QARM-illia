@@ -717,17 +717,22 @@ def page_portfolio_optimization(data):
 
         # 3) Run **ONLY** the backtest here
         try:
-            with st.spinner("Optimizing and backtesting..."):
-                perf, summary_df, debug_weights_df = run_backtest(config, data)
+                import time
+                with st.spinner("Optimizing and backtesting..."):
+                    t0 = time.perf_counter()
+                    perf, summary_df, debug_weights_df = run_backtest(config, data)
+                    t1 = time.perf_counter()
 
-        except ValueError:
-            st.error(
-                "The optimizer could not find a feasible portfolio with the current constraints."
-            )
-            st.caption(
-                "This usually means sector/ESG minimums or max-weight-per-asset are too tight."
-            )
-            st.stop()
+                st.write(f"⏱️ Backtest time: {t1 - t0:.2f} seconds")
+
+            except ValueError as e:
+                st.error(
+                    "The optimizer could not find a feasible portfolio with the current constraints."
+                )
+                st.caption(
+                    "This usually means sector/ESG minimums or max-weight-per-asset are too tight."
+                )
+                st.stop()
 
         st.success("Backtest completed.")
 
