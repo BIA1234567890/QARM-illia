@@ -669,72 +669,70 @@ def page_portfolio_optimization(data):
         disabled=bool(constraint_errors),
     )
 
-        if run_clicked:
-        # 1) Check constraints first
-        if constraint_errors:
-            st.error("The current constraint configuration is not feasible:")
-            for msg in constraint_errors:
-                st.write(f"• {msg}")
-            st.stop()  # do not run the optimizer
+    if run_clicked:
+            # 1) Check constraints first
+            if constraint_errors:
+                st.error("The current constraint configuration is not feasible:")
+                for msg in constraint_errors:
+                    st.write(f"• {msg}")
+                st.stop()  # do not run the optimizer
 
-        # 2) Build config only if constraints are okay
-        config = PortfolioConfig(
-            today_date=pd.Timestamp("2025-10-01"),
-            investment_horizon_years=investment_horizon_years,
-            est_months=est_months,
-            rebalancing=rebalancing,
-            gamma=gamma,
-            universe_choice=universe_choice,
-            keep_sectors=keep_sectors,
-            keep_esg=keep_esg,
-            selected_asset_classes_other=selected_asset_classes_other,
-            keep_ids_by_class=keep_ids_by_class,
-            max_weight_per_asset=max_weight_per_asset,
-            sector_constraints=sector_constraints,
-            esg_constraints=esg_constraints,
-            asset_class_constraints=asset_class_constraints,
-            initial_wealth=investment_amount,
-        )
-
-        # 3) Run ONLY the backtest here (heavy loop)
-        try:
-            with st.spinner("Optimizing and backtesting..."):
-                perf, summary_df, debug_weights_df = run_backtest(config, data)
-        except ValueError as e:
-            st.error(
-                "The optimizer could not find a feasible portfolio with the current set of "
-                "constraints and per-asset limits."
+            # 2) Build config only if constraints are okay
+            config = PortfolioConfig(
+                today_date=pd.Timestamp("2025-10-01"),
+                investment_horizon_years=investment_horizon_years,
+                est_months=est_months,
+                rebalancing=rebalancing,
+                gamma=gamma,
+                universe_choice=universe_choice,
+                keep_sectors=keep_sectors,
+                keep_esg=keep_esg,
+                selected_asset_classes_other=selected_asset_classes_other,
+                keep_ids_by_class=keep_ids_by_class,
+                max_weight_per_asset=max_weight_per_asset,
+                sector_constraints=sector_constraints,
+                esg_constraints=esg_constraints,
+                asset_class_constraints=asset_class_constraints,
+                initial_wealth=investment_amount,
             )
-            st.caption(
-                "This typically happens when minimum allocations across sectors, ESG buckets or "
-                "asset classes are too tight relative to the available universe and the maximum "
-                "weight per asset. Please relax some minimum constraints or increase the maximum "
-                "weight per asset, then try again."
-            )
-            st.stop()
 
-        st.success("Optimization completed.")
+            # 3) Run **ONLY** the backtest here
+            try:
+                with st.spinner("Optimizing and backtesting..."):
+                    perf, summary_df, debug_weights_df = run_backtest(config, data)
 
-        # Store backtest results and CONFIG; we will compute today's portfolio lazily
-        st.session_state["backtest_results"] = {
-            "config": config,
-            "perf": perf,
-            "summary_df": summary_df,
-            "debug_weights_df": debug_weights_df,
-            "today_res": None,  # will be filled the first time we open the tab
-            "investment_amount": investment_amount,
-            "universe_choice": universe_choice,
-            "investment_horizon_years": investment_horizon_years,
-            "est_months": est_months,
-            "rebalancing": rebalancing,
-            "gamma": gamma,
-            "profile_label": profile_label,
-            "max_weight_per_asset": max_weight_per_asset,
-            "selected_asset_classes_other": selected_asset_classes_other,
-            "sector_constraints": sector_constraints,
-            "esg_constraints": esg_constraints,
-            "asset_class_constraints": asset_class_constraints,
-        }
+            except ValueError as e:
+                st.error(
+                    "The optimizer could not find a feasible portfolio with the current constraints."
+                )
+                st.caption(
+                    "This usually means sector/ESG minimums or max-weight-per-asset are too tight."
+                )
+                st.stop()
+
+            st.success("Backtest completed.")
+
+            # store everything — NOT today's optimization
+            st.session_state["backtest_results"] = {
+                "config": config,
+                "perf": perf,
+                "summary_df": summary_df,
+                "debug_weights_df": debug_weights_df,
+                "today_res": None,
+                "investment_amount": investment_amount,
+                "universe_choice": universe_choice,
+                "investment_horizon_years": investment_horizon_years,
+                "est_months": est_months,
+                "rebalancing": rebalancing,
+                "gamma": gamma,
+                "profile_label": profile_label,
+                "max_weight_per_asset": max_weight_per_asset,
+                "selected_asset_classes_other": selected_asset_classes_other,
+                "sector_constraints": sector_constraints,
+                "esg_constraints": esg_constraints,
+                "asset_class_constraints": asset_class_constraints,
+            }
+
 
 
         if "backtest_results" in st.session_state:
