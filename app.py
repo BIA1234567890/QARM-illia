@@ -62,7 +62,488 @@ def page_about():
     st.title("Our Investment Firm")
 
     st.markdown(
+        """def page_about():
+    # --- Custom CSS for premium look ---
+    st.markdown(
         """
+        <style>
+        /* Overall page background tweak */
+        .block-container {
+            padding-top: 2rem;
+            padding-bottom: 3rem;
+        }
+
+        .phi-hero {
+            border-radius: 24px;
+            padding: 2.8rem 3rem;
+            background: radial-gradient(circle at 0% 0%, #1f2937 0, #020617 45%, #020617 100%);
+            color: #e5e7eb;
+            box-shadow: 0 28px 60px rgba(0,0,0,0.55);
+            border: 1px solid rgba(148,163,184,0.35);
+        }
+
+        .phi-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            letter-spacing: .06em;
+            text-transform: uppercase;
+            background: rgba(15,23,42,0.9);
+            border: 1px solid rgba(148,163,184,0.6);
+            color: #e5e7eb;
+        }
+
+        .phi-tag-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 999px;
+            background: #22c55e;
+            box-shadow: 0 0 0 4px rgba(34,197,94,0.35);
+        }
+
+        .phi-hero-title {
+            font-size: 2.2rem;
+            line-height: 1.1;
+            font-weight: 700;
+            margin-top: 1.3rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .phi-hero-subtitle {
+            font-size: 1.02rem;
+            color: #cbd5f5;
+            max-width: 34rem;
+        }
+
+        .phi-hero-stats {
+            display: flex;
+            gap: 1.8rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .phi-stat {
+            min-width: 130px;
+        }
+
+        .phi-stat-label {
+            font-size: 0.82rem;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .phi-stat-value {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #e5e7eb;
+        }
+
+        .phi-badge {
+            display: inline-flex;
+            gap: 0.35rem;
+            align-items: center;
+            padding: 0.4rem 0.75rem;
+            border-radius: 999px;
+            background: rgba(15,23,42,0.8);
+            font-size: 0.78rem;
+            color: #e5e7eb;
+            border: 1px solid rgba(55,65,81,0.9);
+        }
+
+        .phi-badge span:nth-child(1) {
+            font-size: 1rem;
+        }
+
+        .phi-section {
+            margin-top: 2.8rem;
+        }
+
+        .phi-section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+        }
+
+        .phi-section-subtitle {
+            font-size: 0.95rem;
+            color: #6b7280;
+            margin-bottom: 1.8rem;
+        }
+
+        .phi-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 1.4rem;
+        }
+
+        .phi-card {
+            border-radius: 18px;
+            padding: 1.25rem 1.4rem;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            box-shadow: 0 10px 30px rgba(15,23,42,0.04);
+        }
+
+        .phi-card-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            margin-bottom: 0.4rem;
+            background: radial-gradient(circle at 0% 0%, #0ea5e9, #1d4ed8);
+            color: #eff6ff;
+        }
+
+        .phi-card-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .phi-card-text {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .phi-pill-small {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.3rem 0.7rem;
+            border-radius: 999px;
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-size: 0.78rem;
+            font-weight: 500;
+            margin-bottom: 0.6rem;
+        }
+
+        .phi-process {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .phi-step {
+            border-radius: 14px;
+            padding: 1rem 1.1rem;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+        }
+
+        .phi-step-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .phi-step-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+            margin: 0.15rem 0 0.3rem 0;
+        }
+
+        .phi-step-text {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .phi-contact {
+            margin-top: 3.2rem;
+            border-radius: 20px;
+            padding: 1.7rem 1.9rem;
+            background: linear-gradient(135deg, #0f172a, #020617);
+            color: #e5e7eb;
+            border: 1px solid rgba(148,163,184,0.55);
+            box-shadow: 0 20px 40px rgba(15,23,42,0.5);
+        }
+
+        .phi-contact-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+        }
+
+        .phi-contact-text {
+            font-size: 0.95rem;
+            color: #cbd5f5;
+            margin-bottom: 0.9rem;
+        }
+
+        .phi-contact-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.9rem;
+            align-items: center;
+        }
+
+        .phi-contact-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            padding: 0.55rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(15,23,42,0.9);
+            border: 1px solid rgba(148,163,184,0.8);
+            font-size: 0.85rem;
+            color: #e5e7eb;
+        }
+
+        .phi-contact-chip a {
+            color: #38bdf8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .phi-contact-chip a:hover {
+            text-decoration: underline;
+        }
+
+        .phi-contact-note {
+            font-size: 0.8rem;
+            color: #9ca3af;
+        }
+
+        @media (max-width: 768px) {
+            .phi-hero {
+                padding: 1.9rem 1.4rem;
+            }
+            .phi-hero-title {
+                font-size: 1.75rem;
+            }
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # --- HERO SECTION ---
+    st.markdown(
+        """
+        <div class="phi-hero">
+          <div class="phi-pill">
+            <div class="phi-tag-dot"></div>
+            PHI INVESTMENT CAPITAL · QUANTITATIVE PORTFOLIO MANAGERS
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:2.5rem;margin-top:1.5rem;">
+            <div style="flex:1 1 260px;min-width:260px;">
+              <div class="phi-hero-title">
+                Quietly obsessing over risk,<br/>so you don't have to.
+              </div>
+              <div class="phi-hero-subtitle">
+                Phi Investment Capital is a quantitative asset &amp; risk management boutique.
+                We build rule-based portfolios where every position, constraint and trade
+                has a clear, documented rationale – no black boxes, no story-telling after the fact.
+              </div>
+
+              <div class="phi-hero-stats">
+                <div class="phi-stat">
+                  <div class="phi-stat-label">Approach</div>
+                  <div class="phi-stat-value">Systematic &amp; evidence-based</div>
+                </div>
+                <div class="phi-stat">
+                  <div class="phi-stat-label">Focus</div>
+                  <div class="phi-stat-value">Risk before return</div>
+                </div>
+                <div class="phi-stat">
+                  <div class="phi-stat-label">Mandates</div>
+                  <div class="phi-stat-value">Bespoke constraints</div>
+                </div>
+              </div>
+            </div>
+
+            <div style="flex:1 1 230px;min-width:230px;display:flex;flex-direction:column;gap:0.7rem;justify-content:flex-start;">
+              <div class="phi-badge">
+                <span>📊</span>
+                <span>Markowitz mean–variance architecture with robust covariance (Ledoit–Wolf).</span>
+              </div>
+              <div class="phi-badge">
+                <span>🧭</span>
+                <span>Client-specific risk profile translated into a clear risk-aversion parameter (γ).</span>
+              </div>
+              <div class="phi-badge">
+                <span>🌱</span>
+                <span>ESG &amp; sector constraints built into the optimizer, not added as an afterthought.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # --- WHO WE ARE / WHAT WE DO / HOW WE INVEST ---
+    st.markdown('<div class="phi-section">', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class="phi-section-title">Who we are &amp; how we invest</div>
+        <div class="phi-section-subtitle">
+          Our starting point is simple: clients accept market risk, we accept process risk.
+          We cannot control markets – but we can control how disciplined, transparent and robust
+          our investment process is.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <div class="phi-card-grid">
+          <div class="phi-card">
+            <div class="phi-card-icon">🧠</div>
+            <div class="phi-card-title">Quantitative, not impersonal</div>
+            <div class="phi-card-text">
+              We rely on data, statistics and portfolio theory to build portfolios,
+              but we never forget that behind each mandate there is a family,
+              a company, or an institution with real obligations. Our work is to
+              translate those constraints into numbers the optimizer understands.
+            </div>
+          </div>
+
+          <div class="phi-card">
+            <div class="phi-card-icon">🧩</div>
+            <div class="phi-card-title">From story to constraints</div>
+            <div class="phi-card-text">
+              Every “I can’t afford a 40% drawdown”, “I want equity exposure but not to any one sector”,
+              or “ESG is important, but not at any price” becomes a formal constraint in the model.
+              This forces us to be explicit, consistent and accountable in how we manage risk.
+            </div>
+          </div>
+
+          <div class="phi-card">
+            <div class="phi-card-icon">🔍</div>
+            <div class="phi-card-title">Transparency by design</div>
+            <div class="phi-card-text">
+              The app you are using is the same engine we use internally:
+              you can see the filters, constraints and backtests exactly as we do.
+              There is no “investment committee magic” between the portfolio you see
+              and the portfolio we would implement.
+            </div>
+          </div>
+
+          <div class="phi-card">
+            <div class="phi-card-icon">🛡️</div>
+            <div class="phi-card-title">Risk before return</div>
+            <div class="phi-card-text">
+              We accept that market cycles are unpredictable. Instead of promising the
+              unattainable, we focus on position sizing, diversification, max-weight controls
+              and drawdown awareness – the levers that are actually under our control.
+            </div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # --- OUR PROCESS / CLIENT JOURNEY ---
+    st.markdown('<div class="phi-section">', unsafe_allow_html=True)
+    st.markdown(
+        """
+        <div class="phi-pill-small">Our process · From conversation to portfolio</div>
+        <div class="phi-section-title">How we work with you</div>
+        <div class="phi-section-subtitle">
+          We try to make the journey from first discussion to live portfolio as
+          clear and predictable as the portfolios themselves.
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+        <div class="phi-process">
+          <div class="phi-step">
+            <div class="phi-step-label">Step 1</div>
+            <div class="phi-step-title">Understand your reality</div>
+            <div class="phi-step-text">
+              We start with your balance sheet, liabilities, time horizon and
+              tolerance to drawdowns – not abstract risk questionnaires.
+              The result is a documented risk profile and a clear mandate.
+            </div>
+          </div>
+
+          <div class="phi-step">
+            <div class="phi-step-label">Step 2</div>
+            <div class="phi-step-title">Translate into rules</div>
+            <div class="phi-step-text">
+              Together we define the investment universe, ESG &amp; sector rules,
+              concentration limits and liquidity requirements. These become
+              explicit constraints for the optimizer.
+            </div>
+          </div>
+
+          <div class="phi-step">
+            <div class="phi-step-label">Step 3</div>
+            <div class="phi-step-title">Build &amp; backtest</div>
+            <div class="phi-step-text">
+              We run long-only Markowitz optimizations with robust covariance,
+              backtest the strategy through multiple market regimes and stress
+              test key assumptions before capital is deployed.
+            </div>
+          </div>
+
+          <div class="phi-step">
+            <div class="phi-step-label">Step 4</div>
+            <div class="phi-step-title">Monitor &amp; report</div>
+            <div class="phi-step-text">
+              Once invested, we rebalance at the agreed frequency and provide
+              transparent reporting on performance, risk and adherence to your mandate.
+              No surprises, no style drift.
+            </div>
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.markdown("</div>", unsafe_allow_html=True)
+
+    # --- CONTACT / CALL TO ACTION ---
+    st.markdown(
+        """
+        <div class="phi-contact">
+          <div class="phi-contact-title">Let’s talk about your constraints, not a generic model.</div>
+          <div class="phi-contact-text">
+            If you would like to explore what a fully transparent, rule-based portfolio
+            could look like for your situation, you can reach us directly or share
+            your mandate constraints for a first diagnostic.
+          </div>
+
+          <div class="phi-contact-row">
+            <div class="phi-contact-chip">
+              <span>📧</span>
+              <span>Email:&nbsp;
+                <a href="mailto:contact@phi-investment.capital">
+                  contact@phi-investment.capital
+                </a>
+              </span>
+            </div>
+
+            <div class="phi-contact-chip">
+              <span>📄</span>
+              <span>Send us a short description of your objectives, constraints and time horizon.</span>
+            </div>
+          </div>
+
+          <div style="margin-top:0.8rem;" class="phi-contact-note">
+            We typically respond within one business day. Please note that we do not provide
+            investment advice through this app – any discussion begins with understanding
+            your situation and regulatory context.
+          </div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
         ### Who we are
         We are a quantitative asset & risk management boutique.
 
