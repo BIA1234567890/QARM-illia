@@ -11,10 +11,12 @@ from engine import (
     run_today_optimization,
 )
 
-from functions import (validate_constraints,
-                       compute_backtest_stats,
-                       management_fee_from_wealth,
-                       build_backtest_context_text)
+from functions import (
+    validate_constraints,
+    compute_backtest_stats,
+    management_fee_from_wealth,
+    build_backtest_context_text,
+)
 
 
 # --------------- GLOBAL DATA (cached) ---------------
@@ -122,7 +124,6 @@ def page_portfolio_optimization(data):
             "(applied pro rata on a monthly basis)."
         )
 
-
     with colC:
         investment_horizon_years = st.selectbox(
             "Investment Horizon",
@@ -225,9 +226,8 @@ def page_portfolio_optimization(data):
         options=asset_classes_all,
         default=asset_classes_all,
         help="These asset classes will be available to the optimizer. "
-             "Constraints later control how much can be allocated to each.",
+        "Constraints later control how much can be allocated to each.",
     )
-
 
     keep_ids_by_class = {}
 
@@ -281,62 +281,82 @@ def page_portfolio_optimization(data):
         q1 = st.slider(
             "1. Reaction to a -20% loss in one year\n"
             "1 = sell everything, 5 = buy more",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
         q2 = st.slider(
             "2. Comfort with large fluctuations\n"
             "1 = not at all, 5 = very comfortable",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
         q3 = st.slider(
             "3. Return vs risk trade-off\n"
             "1 = stable low returns, 5 = max return even with large risk",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
         q4 = st.slider(
             "4. Investment horizon\n"
             "1 = < 1 year, 5 = > 10 years",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
         q5 = st.slider(
             "5. How do you view risk?\n"
             "1 = something to avoid, 5 = essential for higher returns",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
     with col_right:
         q6 = st.slider(
             "6. Stress during market crashes\n"
             "1 = extremely stressed, 5 = not stressed at all",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
         q7 = st.slider(
             "7. Stability of your income/finances\n"
             "1 = very unstable, 5 = very stable",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
         q8 = st.slider(
             "8. Experience with investing\n"
             "1 = not familiar, 5 = very experienced",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
         q9 = st.slider(
             "9. Reaction to a +20% gain in one year\n"
             "1 = sell to lock gains, 5 = add significantly more money",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
         q10 = st.slider(
             "10. Share of net worth in risky assets\n"
             "1 = < 10%, 5 = > 60%",
-            min_value=1, max_value=5, value=3,
+            min_value=1,
+            max_value=5,
+            value=3,
         )
 
     scores = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10]
@@ -402,7 +422,7 @@ def page_portfolio_optimization(data):
     use_custom_max = st.checkbox(
         "Enable custom maximum weight per asset",
         value=False,
-        help="By default, each asset is capped at 5%. Enable only if you understand concentration risk."
+        help="By default, each asset is capped at 5%. Enable only if you understand concentration risk.",
     )
 
     if not use_custom_max:
@@ -415,7 +435,7 @@ def page_portfolio_optimization(data):
             max_value=0.25,
             value=0.05,
             step=0.01,
-            help="Higher caps increase concentration risk and may reduce diversification."
+            help="Higher caps increase concentration risk and may reduce diversification.",
         )
 
         st.warning(
@@ -583,7 +603,6 @@ def page_portfolio_optimization(data):
         asset_class_constraints = None
 
     else:
-
         asset_classes_for_constraints = ["Equity"] + selected_asset_classes_other
 
         asset_class_constraints = {}
@@ -657,7 +676,6 @@ def page_portfolio_optimization(data):
         for msg in constraint_errors:
             st.write(f"• {msg}")
 
-
     # ============================================================
     # STEP 5 – RUN OPTIMIZATION & BACKTEST
     # ============================================================
@@ -669,76 +687,76 @@ def page_portfolio_optimization(data):
         disabled=bool(constraint_errors),
     )
 
+    # ---- 5A) Run the backtest only when button is clicked ----
     if run_clicked:
-            # 1) Check constraints first
-            if constraint_errors:
-                st.error("The current constraint configuration is not feasible:")
-                for msg in constraint_errors:
-                    st.write(f"• {msg}")
-                st.stop()  # do not run the optimizer
+        # 1) Check constraints first
+        if constraint_errors:
+            st.error("The current constraint configuration is not feasible:")
+            for msg in constraint_errors:
+                st.write(f"• {msg}")
+            st.stop()  # do not run the optimizer
 
-            # 2) Build config only if constraints are okay
-            config = PortfolioConfig(
-                today_date=pd.Timestamp("2025-10-01"),
-                investment_horizon_years=investment_horizon_years,
-                est_months=est_months,
-                rebalancing=rebalancing,
-                gamma=gamma,
-                universe_choice=universe_choice,
-                keep_sectors=keep_sectors,
-                keep_esg=keep_esg,
-                selected_asset_classes_other=selected_asset_classes_other,
-                keep_ids_by_class=keep_ids_by_class,
-                max_weight_per_asset=max_weight_per_asset,
-                sector_constraints=sector_constraints,
-                esg_constraints=esg_constraints,
-                asset_class_constraints=asset_class_constraints,
-                initial_wealth=investment_amount,
+        # 2) Build config only if constraints are okay
+        config = PortfolioConfig(
+            today_date=pd.Timestamp("2025-10-01"),
+            investment_horizon_years=investment_horizon_years,
+            est_months=est_months,
+            rebalancing=rebalancing,
+            gamma=gamma,
+            universe_choice=universe_choice,
+            keep_sectors=keep_sectors,
+            keep_esg=keep_esg,
+            selected_asset_classes_other=selected_asset_classes_other,
+            keep_ids_by_class=keep_ids_by_class,
+            max_weight_per_asset=max_weight_per_asset,
+            sector_constraints=sector_constraints,
+            esg_constraints=esg_constraints,
+            asset_class_constraints=asset_class_constraints,
+            initial_wealth=investment_amount,
+        )
+
+        # 3) Run **ONLY** the backtest here
+        try:
+            with st.spinner("Optimizing and backtesting..."):
+                perf, summary_df, debug_weights_df = run_backtest(config, data)
+
+        except ValueError:
+            st.error(
+                "The optimizer could not find a feasible portfolio with the current constraints."
             )
+            st.caption(
+                "This usually means sector/ESG minimums or max-weight-per-asset are too tight."
+            )
+            st.stop()
 
-            # 3) Run **ONLY** the backtest here
-            try:
-                with st.spinner("Optimizing and backtesting..."):
-                    perf, summary_df, debug_weights_df = run_backtest(config, data)
+        st.success("Backtest completed.")
 
-            except ValueError as e:
-                st.error(
-                    "The optimizer could not find a feasible portfolio with the current constraints."
-                )
-                st.caption(
-                    "This usually means sector/ESG minimums or max-weight-per-asset are too tight."
-                )
-                st.stop()
+        # store everything — NOT today's optimization
+        st.session_state["backtest_results"] = {
+            "config": config,
+            "perf": perf,
+            "summary_df": summary_df,
+            "debug_weights_df": debug_weights_df,
+            "today_res": None,
+            "investment_amount": investment_amount,
+            "universe_choice": universe_choice,
+            "investment_horizon_years": investment_horizon_years,
+            "est_months": est_months,
+            "rebalancing": rebalancing,
+            "gamma": gamma,
+            "profile_label": profile_label,
+            "max_weight_per_asset": max_weight_per_asset,
+            "selected_asset_classes_other": selected_asset_classes_other,
+            "sector_constraints": sector_constraints,
+            "esg_constraints": esg_constraints,
+            "asset_class_constraints": asset_class_constraints,
+        }
 
-            st.success("Backtest completed.")
-
-            # store everything — NOT today's optimization
-            st.session_state["backtest_results"] = {
-                "config": config,
-                "perf": perf,
-                "summary_df": summary_df,
-                "debug_weights_df": debug_weights_df,
-                "today_res": None,
-                "investment_amount": investment_amount,
-                "universe_choice": universe_choice,
-                "investment_horizon_years": investment_horizon_years,
-                "est_months": est_months,
-                "rebalancing": rebalancing,
-                "gamma": gamma,
-                "profile_label": profile_label,
-                "max_weight_per_asset": max_weight_per_asset,
-                "selected_asset_classes_other": selected_asset_classes_other,
-                "sector_constraints": sector_constraints,
-                "esg_constraints": esg_constraints,
-                "asset_class_constraints": asset_class_constraints,
-            }
-
-
-
-        if "backtest_results" in st.session_state:
+    # ---- 5B) If we have results in session_state, display them ----
+    if "backtest_results" in st.session_state:
         r = st.session_state["backtest_results"]
 
-        config = r["config"]          # we stored the full config
+        config = r["config"]  # full config stored
         perf = r["perf"]
         summary_df = r["summary_df"]
         debug_weights_df = r["debug_weights_df"]
@@ -757,10 +775,9 @@ def page_portfolio_optimization(data):
         esg_constraints = r["esg_constraints"]
         asset_class_constraints = r["asset_class_constraints"]
 
-
-
         tab_backtest, tab_today = st.tabs(["📈 Backtest", "📌 Today's Portfolio"])
 
+        # ======================= BACKTEST TAB =======================
         with tab_backtest:
             st.subheader("Backtest Performance")
 
@@ -787,15 +804,20 @@ def page_portfolio_optimization(data):
 
                 chart_data = combined.reset_index().rename(columns={"Date": "Date"})
 
-                import altair as alt
-                chart_data_long = chart_data.melt("Date", var_name="Series", value_name="Return")
+                chart_data_long = chart_data.melt(
+                    "Date", var_name="Series", value_name="Return"
+                )
 
                 # --------------------------------------------------------
                 # B) CUMULATIVE RETURN CHART WITH BENCHMARKS
                 # --------------------------------------------------------
                 st.markdown("**Cumulative Return of the Strategy vs Benchmarks**")
 
-                max_ret = float(chart_data_long["Return"].max()) if not chart_data_long["Return"].isna().all() else 0.0
+                max_ret = (
+                    float(chart_data_long["Return"].max())
+                    if not chart_data_long["Return"].isna().all()
+                    else 0.0
+                )
                 max_ret = max(max_ret, 0.0)
                 max_tick = (int(max_ret * 10) + 1) / 10.0 if max_ret > 0 else 0.1
                 tick_values = [i / 10.0 for i in range(0, int(max_tick * 10) + 1)]
@@ -804,26 +826,43 @@ def page_portfolio_optimization(data):
                     alt.Chart(chart_data_long)
                     .mark_line(point=True)
                     .encode(
-                        x=alt.X("Date:T", axis=alt.Axis(format="%b %Y", labelAngle=-45)),
+                        x=alt.X(
+                            "Date:T",
+                            axis=alt.Axis(format="%b %Y", labelAngle=-45),
+                        ),
                         y=alt.Y(
                             "Return:Q",
                             title="Cumulative return",
                             scale=alt.Scale(domain=[0, max_tick], nice=False),
                             axis=alt.Axis(format="%", values=tick_values),
                         ),
-                        color=alt.Color("Series:N", sort=["Portfolio", "S&P 500", "MSCI WORLD"]),
+                        color=alt.Color(
+                            "Series:N",
+                            sort=["Portfolio", "S&P 500", "MSCI WORLD"],
+                        ),
                         tooltip=[
-                            alt.Tooltip("Date:T", title="Date", format="%b %Y"),
+                            alt.Tooltip(
+                                "Date:T", title="Date", format="%b %Y"
+                            ),
                             alt.Tooltip("Series:N", title="Series"),
-                            alt.Tooltip("Return:Q", title="Cumulative return", format=".2%"),
+                            alt.Tooltip(
+                                "Return:Q",
+                                title="Cumulative return",
+                                format=".2%",
+                            ),
                         ],
                     )
                 )
 
                 # Drawdown vertical lines
                 if stats and stats["max_drawdown_start"] is not None:
-                    dd_start, dd_end = stats["max_drawdown_start"], stats["max_drawdown_end"]
-                    vline_data = pd.DataFrame({"Date": [dd_start, dd_end], "Label": ["DD start", "DD end"]})
+                    dd_start, dd_end = (
+                        stats["max_drawdown_start"],
+                        stats["max_drawdown_end"],
+                    )
+                    vline_data = pd.DataFrame(
+                        {"Date": [dd_start, dd_end], "Label": ["DD start", "DD end"]}
+                    )
 
                     vlines = (
                         alt.Chart(vline_data)
@@ -862,9 +901,18 @@ def page_portfolio_optimization(data):
                     alt.Chart(perf_plot)
                     .mark_line(point=True)
                     .encode(
-                        x=alt.X("Date:T", axis=alt.Axis(format="%b %Y", labelAngle=-45)),
-                        y=alt.Y("Wealth:Q", scale=alt.Scale(domain=[0, upper_wealth])),
-                        tooltip=[alt.Tooltip("Date:T"), alt.Tooltip("Wealth:Q", format=",.0f")],
+                        x=alt.X(
+                            "Date:T",
+                            axis=alt.Axis(format="%b %Y", labelAngle=-45),
+                        ),
+                        y=alt.Y(
+                            "Wealth:Q",
+                            scale=alt.Scale(domain=[0, upper_wealth]),
+                        ),
+                        tooltip=[
+                            alt.Tooltip("Date:T"),
+                            alt.Tooltip("Wealth:Q", format=",.0f"),
+                        ],
                     )
                 )
 
@@ -889,15 +937,33 @@ def page_portfolio_optimization(data):
                 stats_rows = [
                     ("Initial invested wealth", f"{initial:,.0f}"),
                     ("Final wealth at end of backtest", f"{final_wealth:,.0f}"),
-                    ("Annualised average return", fmt_pct(stats["annualised_avg_return"])),
-                    ("Annualised volatility", fmt_pct(stats["annualised_volatility"])),
-                    ("Annualised cumulative return", fmt_pct(stats["annualised_cum_return"])),
+                    (
+                        "Annualised average return",
+                        fmt_pct(stats["annualised_avg_return"]),
+                    ),
+                    (
+                        "Annualised volatility",
+                        fmt_pct(stats["annualised_volatility"]),
+                    ),
+                    (
+                        "Annualised cumulative return",
+                        fmt_pct(stats["annualised_cum_return"]),
+                    ),
                     ("Min monthly return", fmt_pct(stats["min_monthly_return"])),
                     ("Max monthly return", fmt_pct(stats["max_monthly_return"])),
                     ("Max drawdown", fmt_pct(stats["max_drawdown"])),
-                    ("Max drawdown start", stats["max_drawdown_start"].strftime("%b %Y")),
-                    ("Max drawdown end", stats["max_drawdown_end"].strftime("%b %Y")),
-                    ("Max drawdown duration", f"{stats['max_drawdown_duration_months']} months"),
+                    (
+                        "Max drawdown start",
+                        stats["max_drawdown_start"].strftime("%b %Y"),
+                    ),
+                    (
+                        "Max drawdown end",
+                        stats["max_drawdown_end"].strftime("%b %Y"),
+                    ),
+                    (
+                        "Max drawdown duration",
+                        f"{stats['max_drawdown_duration_months']} months",
+                    ),
                 ]
 
                 st.table(pd.DataFrame(stats_rows, columns=["Metric", "Value"]))
@@ -910,8 +976,10 @@ def page_portfolio_optimization(data):
                 explain_btn = st.button(
                     "Generate AI Commentary on Backtest",
                     type="secondary",
-                    help="Ask the Phi Investment Capital digital assistant to provide a "
-                         "client-friendly interpretation of the backtest results.",
+                    help=(
+                        "Ask the Phi Investment Capital digital assistant to provide a "
+                        "client-friendly interpretation of the backtest results."
+                    ),
                 )
 
                 if explain_btn:
@@ -973,12 +1041,11 @@ def page_portfolio_optimization(data):
                         """
                     )
                     st.markdown(commentary)
-
-
             else:
                 st.warning("No valid backtest window for the selected settings.")
 
-                with tab_today:
+        # ======================= TODAY'S PORTFOLIO TAB =======================
+        with tab_today:
             st.subheader("Today's Optimal Portfolio")
 
             # Lazily compute today's optimal portfolio only the first time
@@ -995,21 +1062,19 @@ def page_portfolio_optimization(data):
             sector_in_eq = today_res["sector_in_equity"]
             esg_in_eq = today_res["esg_in_equity"]
 
-
             st.markdown("**Top 5 Holdings**")
             st.dataframe(top5)
 
-
             colA, colB, colC = st.columns(3)
+
+            # ----- Asset-class allocation -----
             with colA:
                 st.markdown("**By Asset Class**")
 
                 if not alloc_by_ac.empty:
-                    # 1️⃣ Build base DataFrame
                     df_ac = alloc_by_ac.reset_index()
                     df_ac.columns = ["AssetClass", "Weight"]
 
-                    # 2️⃣ Add asset-class min/max constraints (if any)
                     df_ac["Min"] = df_ac["AssetClass"].map(
                         lambda ac: asset_class_constraints.get(ac, {}).get("min", None)
                         if asset_class_constraints
@@ -1021,7 +1086,6 @@ def page_portfolio_optimization(data):
                         else None
                     )
 
-                    # 3️⃣ Base blue bars
                     bars_ac = (
                         alt.Chart(df_ac)
                         .mark_bar(color="#4BA3FF")
@@ -1030,12 +1094,13 @@ def page_portfolio_optimization(data):
                             y=alt.Y("Weight:Q", title="Portfolio weight"),
                             tooltip=[
                                 alt.Tooltip("AssetClass:N", title="Asset class"),
-                                alt.Tooltip("Weight:Q", title="Weight", format=".2%"),
+                                alt.Tooltip(
+                                    "Weight:Q", title="Weight", format=".2%"
+                                ),
                             ],
                         )
                     )
 
-                    # 4️⃣ YEllOW tick for MIN constraint
                     min_marks_ac = (
                         alt.Chart(df_ac)
                         .mark_tick(
@@ -1047,12 +1112,13 @@ def page_portfolio_optimization(data):
                         .encode(
                             x="AssetClass:N",
                             y="Min:Q",
-                            tooltip=[alt.Tooltip("Min:Q", title="Min", format=".2%")],
+                            tooltip=[
+                                alt.Tooltip("Min:Q", title="Min", format=".2%")
+                            ],
                         )
                         .transform_filter("datum.Min != null")
                     )
 
-                    # 5️⃣ RED tick for MAX constraint
                     max_marks_ac = (
                         alt.Chart(df_ac)
                         .mark_tick(
@@ -1064,39 +1130,40 @@ def page_portfolio_optimization(data):
                         .encode(
                             x="AssetClass:N",
                             y="Max:Q",
-                            tooltip=[alt.Tooltip("Max:Q", title="Max", format=".2%")],
+                            tooltip=[
+                                alt.Tooltip("Max:Q", title="Max", format=".2%")
+                            ],
                         )
                         .transform_filter("datum.Max != null")
                     )
 
-                    # 6️⃣ Combine layers
                     chart_ac = (bars_ac + min_marks_ac + max_marks_ac).properties(
                         height=300
                     ).interactive()
 
                     st.altair_chart(chart_ac, use_container_width=True)
-
                 else:
                     st.info("No allocation across asset classes.")
 
+            # ----- Sector breakdown -----
             with colB:
                 st.markdown("**Sector Breakdown (Equity)**")
 
                 if not sector_in_eq.empty:
-
-                    # 1️⃣ Build base DataFrame for chart
                     df_sector = sector_in_eq.reset_index()
                     df_sector.columns = ["Sector", "Weight"]
 
-                    # 2️⃣ Add sector min/max constraints (if any)
                     df_sector["Min"] = df_sector["Sector"].map(
-                        lambda s: sector_constraints.get(s, {}).get("min", None) if sector_constraints else None
+                        lambda s: sector_constraints.get(s, {}).get("min", None)
+                        if sector_constraints
+                        else None
                     )
                     df_sector["Max"] = df_sector["Sector"].map(
-                        lambda s: sector_constraints.get(s, {}).get("max", None) if sector_constraints else None
+                        lambda s: sector_constraints.get(s, {}).get("max", None)
+                        if sector_constraints
+                        else None
                     )
 
-                    # 3️⃣ Base bar chart
                     bars = (
                         alt.Chart(df_sector)
                         .mark_bar(color="#4BA3FF")
@@ -1110,7 +1177,6 @@ def page_portfolio_optimization(data):
                         )
                     )
 
-                    # 4️⃣ YELLOW tick for MIN constraint
                     min_marks = (
                         alt.Chart(df_sector)
                         .mark_tick(
@@ -1122,12 +1188,13 @@ def page_portfolio_optimization(data):
                         .encode(
                             x="Sector:N",
                             y="Min:Q",
-                            tooltip=[alt.Tooltip("Min:Q", title="Min", format=".2%")],
+                            tooltip=[
+                                alt.Tooltip("Min:Q", title="Min", format=".2%")
+                            ],
                         )
                         .transform_filter("datum.Min != null")
                     )
 
-                    # 5️⃣ RED tick for MAX constraint
                     max_marks = (
                         alt.Chart(df_sector)
                         .mark_tick(
@@ -1139,39 +1206,40 @@ def page_portfolio_optimization(data):
                         .encode(
                             x="Sector:N",
                             y="Max:Q",
-                            tooltip=[alt.Tooltip("Max:Q", title="Max", format=".2%")],
+                            tooltip=[
+                                alt.Tooltip("Max:Q", title="Max", format=".2%")
+                            ],
                         )
                         .transform_filter("datum.Max != null")
                     )
 
-                    # 6️⃣ Combine layers
                     chart_sector = (bars + min_marks + max_marks).properties(
                         height=300
                     ).interactive()
 
                     st.altair_chart(chart_sector, use_container_width=True)
-
                 else:
                     st.info("No equity allocation.")
 
+            # ----- ESG breakdown -----
             with colC:
                 st.markdown("**ESG Breakdown (Equity)**")
 
                 if not esg_in_eq.empty:
-
-                    # 1️⃣ Build base DataFrame
                     df_esg = esg_in_eq.reset_index()
                     df_esg.columns = ["ESG", "Weight"]
 
-                    # 2️⃣ Add ESG min/max constraints (if any)
                     df_esg["Min"] = df_esg["ESG"].map(
-                        lambda s: esg_constraints.get(s, {}).get("min", None) if esg_constraints else None
+                        lambda s: esg_constraints.get(s, {}).get("min", None)
+                        if esg_constraints
+                        else None
                     )
                     df_esg["Max"] = df_esg["ESG"].map(
-                        lambda s: esg_constraints.get(s, {}).get("max", None) if esg_constraints else None
+                        lambda s: esg_constraints.get(s, {}).get("max", None)
+                        if esg_constraints
+                        else None
                     )
 
-                    # 3️⃣ Base blue bars
                     bars_esg = (
                         alt.Chart(df_esg)
                         .mark_bar(color="#4BA3FF")
@@ -1185,7 +1253,6 @@ def page_portfolio_optimization(data):
                         )
                     )
 
-                    # 4️⃣ YELLOW tick for MIN constraint
                     min_marks_esg = (
                         alt.Chart(df_esg)
                         .mark_tick(
@@ -1197,12 +1264,13 @@ def page_portfolio_optimization(data):
                         .encode(
                             x="ESG:N",
                             y="Min:Q",
-                            tooltip=[alt.Tooltip("Min:Q", title="Min", format=".2%")],
+                            tooltip=[
+                                alt.Tooltip("Min:Q", title="Min", format=".2%")
+                            ],
                         )
                         .transform_filter("datum.Min != null")
                     )
 
-                    # 5️⃣ RED tick for MAX constraint
                     max_marks_esg = (
                         alt.Chart(df_esg)
                         .mark_tick(
@@ -1214,18 +1282,18 @@ def page_portfolio_optimization(data):
                         .encode(
                             x="ESG:N",
                             y="Max:Q",
-                            tooltip=[alt.Tooltip("Max:Q", title="Max", format=".2%")],
+                            tooltip=[
+                                alt.Tooltip("Max:Q", title="Max", format=".2%")
+                            ],
                         )
                         .transform_filter("datum.Max != null")
                     )
 
-                    # 6️⃣ Combine everything
                     chart_esg = (bars_esg + min_marks_esg + max_marks_esg).properties(
                         height=300
                     ).interactive()
 
                     st.altair_chart(chart_esg, use_container_width=True)
-
                 else:
                     st.info("No equity allocation.")
 
@@ -1301,7 +1369,6 @@ def page_ai_assistant():
 
     client = get_llm_client()
 
-
     # Initialize chat history in session_state
     if "ai_messages" not in st.session_state:
         st.session_state.ai_messages = [
@@ -1364,13 +1431,15 @@ def page_ai_assistant():
     user_input = st.chat_input("Ask a question")
     if user_input:
         # 1) Add user message to history
-        st.session_state.ai_messages.append({"role": "user", "content": user_input})
+        st.session_state.ai_messages.append(
+            {"role": "user", "content": user_input}
+        )
 
         # 2) Display user bubble
         with st.chat_message("user"):
             st.markdown(user_input)
 
-        # 3) Call OpenAI
+        # 3) Call LLM
         with st.chat_message("assistant"):
             with st.spinner("Thinking..."):
                 response = client.chat.completions.create(
@@ -1385,10 +1454,6 @@ def page_ai_assistant():
         st.session_state.ai_messages.append(
             {"role": "assistant", "content": reply}
         )
-
-
-
-
 
 
 if __name__ == "__main__":
