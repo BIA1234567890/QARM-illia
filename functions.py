@@ -283,7 +283,7 @@ def markowitz_long_only(estimation_window,
     sigma_hat = lw.covariance_.astype(float)
 
     # Safety: enforce positive definiteness by clipping eigenvalues
-    e#igvals, eigvecs = np.linalg.eigh(sigma_hat)
+    #eigvals, eigvecs = np.linalg.eigh(sigma_hat)
     #eps = 1e-8
     #eigvals_clipped = np.clip(eigvals, eps, None)
     #sigma_hat = (eigvecs @ np.diag(eigvals_clipped) @ eigvecs.T).astype(float)
