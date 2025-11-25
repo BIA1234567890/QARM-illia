@@ -669,7 +669,7 @@ def page_portfolio_optimization(data):
         disabled=bool(constraint_errors),
     )
 
-    if run_clicked:
+        if run_clicked:
         # 1) Check constraints first
         if constraint_errors:
             st.error("The current constraint configuration is not feasible:")
@@ -693,16 +693,14 @@ def page_portfolio_optimization(data):
             sector_constraints=sector_constraints,
             esg_constraints=esg_constraints,
             asset_class_constraints=asset_class_constraints,
-            initial_wealth=investment_amount
+            initial_wealth=investment_amount,
         )
 
-        # 3) Run engine with friendly error handling
+        # 3) Run ONLY the backtest here (heavy loop)
         try:
             with st.spinner("Optimizing and backtesting..."):
                 perf, summary_df, debug_weights_df = run_backtest(config, data)
-                today_res = run_today_optimization(config, data)
         except ValueError as e:
-            # This catches "Optimization failed: Positive directional derivative..." etc.
             st.error(
                 "The optimizer could not find a feasible portfolio with the current set of "
                 "constraints and per-asset limits."
@@ -713,17 +711,17 @@ def page_portfolio_optimization(data):
                 "weight per asset. Please relax some minimum constraints or increase the maximum "
                 "weight per asset, then try again."
             )
-            # Optional: show the raw technical message for yourself
-            # st.text(f"Technical details: {e}")
             st.stop()
 
         st.success("Optimization completed.")
 
+        # Store backtest results and CONFIG; we will compute today's portfolio lazily
         st.session_state["backtest_results"] = {
+            "config": config,
             "perf": perf,
             "summary_df": summary_df,
             "debug_weights_df": debug_weights_df,
-            "today_res": today_res,
+            "today_res": None,  # will be filled the first time we open the tab
             "investment_amount": investment_amount,
             "universe_choice": universe_choice,
             "investment_horizon_years": investment_horizon_years,
@@ -738,13 +736,15 @@ def page_portfolio_optimization(data):
             "asset_class_constraints": asset_class_constraints,
         }
 
-    if "backtest_results" in st.session_state:
+
+        if "backtest_results" in st.session_state:
         r = st.session_state["backtest_results"]
 
+        config = r["config"]          # we stored the full config
         perf = r["perf"]
         summary_df = r["summary_df"]
         debug_weights_df = r["debug_weights_df"]
-        today_res = r["today_res"]
+        today_res = r.get("today_res")  # may be None the first time
 
         investment_amount = r["investment_amount"]
         universe_choice = r["universe_choice"]
@@ -758,6 +758,7 @@ def page_portfolio_optimization(data):
         sector_constraints = r["sector_constraints"]
         esg_constraints = r["esg_constraints"]
         asset_class_constraints = r["asset_class_constraints"]
+
 
 
         tab_backtest, tab_today = st.tabs(["📈 Backtest", "📌 Today's Portfolio"])
@@ -979,14 +980,23 @@ def page_portfolio_optimization(data):
             else:
                 st.warning("No valid backtest window for the selected settings.")
 
-        with tab_today:
+                with tab_today:
             st.subheader("Today's Optimal Portfolio")
+
+            # Lazily compute today's optimal portfolio only the first time
+            today_res = r.get("today_res")
+            if today_res is None:
+                with st.spinner("Computing today's optimal portfolio..."):
+                    today_res = run_today_optimization(config, data)
+                # cache in session_state so we don't recompute
+                st.session_state["backtest_results"]["today_res"] = today_res
 
             today_df = today_res["weights"]
             top5 = today_res["top5"]
             alloc_by_ac = today_res["alloc_by_asset_class"]
             sector_in_eq = today_res["sector_in_equity"]
             esg_in_eq = today_res["esg_in_equity"]
+
 
             st.markdown("**Top 5 Holdings**")
             st.dataframe(top5)
