@@ -435,7 +435,7 @@ def markowitz_long_only(estimation_window,
         jac=f_obj_grad,
         bounds=bounds,
         constraints=constraints_list,
-        options={'maxiter': 1000, 'ftol': 1e-12, 'disp': False}
+        options={'maxiter': 150, 'ftol': 1e-6, 'disp': False}
     )
 
     if not res.success:
