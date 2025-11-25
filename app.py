@@ -3,6 +3,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from groq import Groq
+import time  # <- for timing the backtest
 
 from engine import (
     PortfolioConfig,
@@ -715,24 +716,23 @@ def page_portfolio_optimization(data):
             initial_wealth=investment_amount,
         )
 
-        # 3) Run **ONLY** the backtest here
+        # 3) Run **ONLY** the backtest here (timed)
         try:
-                import time
-                with st.spinner("Optimizing and backtesting..."):
-                    t0 = time.perf_counter()
-                    perf, summary_df, debug_weights_df = run_backtest(config, data)
-                    t1 = time.perf_counter()
+            with st.spinner("Optimizing and backtesting..."):
+                t0 = time.perf_counter()
+                perf, summary_df, debug_weights_df = run_backtest(config, data)
+                t1 = time.perf_counter()
 
-                st.write(f"⏱️ Backtest time: {t1 - t0:.2f} seconds")
+            st.write(f"⏱️ Backtest time: {t1 - t0:.2f} seconds")
 
-            except ValueError as e:
-                st.error(
-                    "The optimizer could not find a feasible portfolio with the current constraints."
-                )
-                st.caption(
-                    "This usually means sector/ESG minimums or max-weight-per-asset are too tight."
-                )
-                st.stop()
+        except ValueError as e:
+            st.error(
+                "The optimizer could not find a feasible portfolio with the current constraints."
+            )
+            st.caption(
+                "This usually means sector/ESG minimums or max-weight-per-asset are too tight."
+            )
+            st.stop()
 
         st.success("Backtest completed.")
 
