@@ -1233,7 +1233,7 @@ def page_portfolio_optimization(data):
                 st.dataframe(today_df)
 
 
-# --------------- PAGE 3: PORTFOLIO OPTIMIZATION ---------------
+# --------------- PAGE 3: AI ---------------
 def page_ai_assistant():
     st.title("Phi Assistant ")
 
